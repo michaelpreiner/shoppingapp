@@ -13,19 +13,6 @@ services:
       - DATABASE_URL=file:/app/prisma/data/dev.db
       - SIRI_SECRET=mein-geheimes-passwort
 
-  caddy:
-    image: caddy:latest
-    container_name: shopping-caddy
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    command: caddy reverse-proxy --from liste.kochrakete.at --to shopping-app:3000
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
-
 volumes:
   sqlite_data:
-  caddy_data:
-  caddy_config:
+
