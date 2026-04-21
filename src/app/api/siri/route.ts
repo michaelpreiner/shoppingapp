@@ -7,10 +7,16 @@ const API_SECRET = process.env.SIRI_SECRET || "mein-geheimes-passwort";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const rawText = await request.text();
+    console.log("---- INCOMING SIRI REQUEST ----");
+    console.log("Raw payload from iOS:", rawText);
+    
+    const body = JSON.parse(rawText);
+    console.log("Parsed JSON:", body);
     
     // Simple basic auth via JSON
     if (body.secret !== API_SECRET) {
+      console.log("Auth failed. Expected:", API_SECRET, "Got:", body.secret);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
