@@ -17,8 +17,7 @@ services:
       - "traefik.http.routers.shoppingapp.rule=Host(`liste.kochrakete.at`)"
       - "traefik.http.routers.shoppingapp.entrypoints=websecure"
       - "traefik.http.routers.shoppingapp.tls=true"
-      # Usually the provider name here is letsencrypt or myresolver, but traefik often auto-detects if there's only one.
-      - "traefik.http.routers.shoppingapp.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.shoppingapp.tls.certresolver=mytlschallenge"
       - "traefik.http.services.shoppingapp.loadbalancer.server.port=3000"
       - "traefik.docker.network=root_default"
     networks:
