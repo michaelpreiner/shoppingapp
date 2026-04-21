@@ -6,7 +6,7 @@ services:
     container_name: shopping-app
     restart: always
     ports:
-      - "3000:3000"
+      - "3033:3000"
     volumes:
       - sqlite_data:/app/prisma/data
     environment:
