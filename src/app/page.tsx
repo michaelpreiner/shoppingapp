@@ -13,9 +13,42 @@ export default function App() {
   const [isFetching, setIsFetching] = useState(true);
   
   const recognitionRef = useRef<any>(null);
+  const locationsRef = useRef(locations);
+  const activeTabRef = useRef(activeTab);
+
+  useEffect(() => {
+    locationsRef.current = locations;
+  }, [locations]);
+
+  useEffect(() => {
+    activeTabRef.current = activeTab;
+  }, [activeTab]);
 
   useEffect(() => {
     fetchLocations();
+    
+    // Reload when coming back to the app
+    const handleFocus = () => fetchLocations(false);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchLocations(false);
+      }
+    };
+    
+    // Polling every 5 seconds to catch Siri updates while app is open
+    const interval = setInterval(() => {
+      fetchLocations(false);
+    }, 5000);
+    
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -44,26 +77,31 @@ export default function App() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locations]);
+  }, []);
 
-  const fetchLocations = async () => {
-    setIsFetching(true);
-    const res = await fetch('/api/locations');
-    const data = await res.json();
-    setLocations(data);
-    if (data.length > 0 && !activeTab) {
-      setActiveTab(data[0].id);
+  const fetchLocations = async (showLoading = true) => {
+    if (showLoading) setIsFetching(true);
+    try {
+      const res = await fetch('/api/locations');
+      const data = await res.json();
+      setLocations(data);
+      if (data.length > 0 && !activeTab) {
+        setActiveTab(data[0].id);
+      }
+    } catch (error) {
+      console.error('Failed to fetch locations:', error);
+    } finally {
+      if (showLoading) setIsFetching(false);
     }
-    setIsFetching(false);
   };
 
   const handleVoiceCommand = async (command: string) => {
     if (!command.trim()) return;
     
-    let targetLocationId = activeTab;
+    let targetLocationId = activeTabRef.current;
     let itemName = command;
     
-    for (const loc of locations) {
+    for (const loc of locationsRef.current) {
       const locNameLower = loc.name.toLowerCase();
       if (command.toLowerCase().includes(locNameLower)) {
         targetLocationId = loc.id;
