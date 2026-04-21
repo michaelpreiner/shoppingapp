@@ -26,7 +26,12 @@ Dieses Dokument fasst den Tech Stack, die wichtigsten Erkenntnisse (Learnings) a
 3. **Silent Background Fetching:**
    Ein Lade-Indikator (`Lade Standorte...`) ist beim ersten Laden der Seite sinnvoll. Bei automatischen Hintergrund-Aktualisierungen (Polling) stört er jedoch enorm, da das UI flackert. Das Entkoppeln des Fetching-Status von Background-Requests ist essentiell für eine flüssige User Experience.
 
+4. **Hartnäckiges iOS Safari Caching (PWA Icons):**
+   Apple iOS cacht PWA Icons (`apple-touch-icon.png`) extrem aggressiv. Ein einfacher Austausch der Bilddatei auf dem Server reicht oft nicht aus, das iPhone behält das alte Icon bei.
+   *Lösung:* Die Nutzung eines "Cache-Busters" als Query-Parameter an den Bild-URLs (z.B. `<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />` und das Gleiche in der `manifest.json`). Dadurch wird Safari gezwungen, das Icon neu vom Server zu laden.
+
 ---
+
 
 ## 🚫 Was wir auf alle Fälle vermeiden sollten (Anti-Patterns)
 
@@ -45,3 +50,7 @@ Dieses Dokument fasst den Tech Stack, die wichtigsten Erkenntnisse (Learnings) a
 4. **Komplexe State-Management Bibliotheken für simple Probleme:**
    **Vermeiden:** Für einen simplen 5-Sekunden Refresh direkt Redux, SWR oder React Query installieren, wenn es nicht zwingend notwendig ist.
    *Warum:* Ein einfacher `setInterval` kombiniert mit `visibilitychange` im `useEffect` ist für eine simple App oft ressourcenschonender, hat keine Dependencies und ist leichter nachvollziehbar.
+
+5. **Davon ausgehen, dass PWA-Assets sich von selbst updaten:**
+   **Vermeiden:** PWA Icons (wie `icon-192x192.png`) ohne Versionierung austauschen und erwarten, dass die Nutzer das Update direkt sehen.
+   *Warum:* Mobile Browser (besonders Safari auf iOS) speichern PWA-Icons extrem hartnäckig im Cache. Ohne einen Cache-Buster (`?v=2`) im HTML-Code oder Manifest wird das Update auf dem Homescreen der Nutzer schlichtweg ignoriert.
