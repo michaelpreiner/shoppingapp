@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  shopping-app:
+    build: .
+    container_name: shopping-app
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - sqlite_data:/app/prisma/data
+    environment:
+      - DATABASE_URL=file:/app/prisma/data/dev.db
+      - SIRI_SECRET=mein-geheimes-passwort
+
+volumes:
+  sqlite_data:
