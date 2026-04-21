@@ -5,6 +5,10 @@ export const metadata: Metadata = {
   title: 'Shopping Liste',
   description: 'Smart Shopping List with Voice Control',
   manifest: '/manifest.json',
+  icons: {
+    icon: '/icon-192x192.png',
+    apple: '/apple-icon.png',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
