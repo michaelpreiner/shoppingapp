@@ -1,8 +1,8 @@
-FROM node:20-slim AS base
+FROM node:20-bullseye-slim AS base
+RUN apt-get update && apt-get install -y openssl
 
 # Install dependencies only when needed
 FROM base AS deps
-RUN apt-get update && apt-get install -y openssl
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
